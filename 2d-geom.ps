@@ -1,0 +1,91 @@
+%[x1, y1, x2, y2]
+/2lineYX {
+	1 2index
+	2sub
+	%[x1, y1, dx, dy]
+	exch div
+	%[x1, y1, dy/dx]
+	[ 4 1 roll
+		%[mark, x1, y1, dy/dx]
+		exch
+		%[mark, x1, dy/dx, y1]
+		/sub cvx 3 1 roll
+		%[mark x1 (sub) dy/dx y1]
+		/mul cvx 2 1 roll
+		%[mark x1 (sub) dy/dx (mul) y1]
+		/add cvx
+		%[mark x1 (sub) dy/dx (mul) y1 (add)]
+	]
+	cvx
+} def
+
+%[x1, y1, x2, y2]
+/2lineXY {
+	1 2index
+	2sub
+	%[x1, y1, dx, dy]
+	div
+	%[x1, y1, dx/dy]
+	[ 4 1 roll
+		%[mark, x1, y1, dx/dy]
+		3 2 roll
+		%[mark, y1, dx/dy, x1]
+		/sub cvx 3 1 roll
+		%[mark y1 (sub) dx/dy x1]
+		/mul cvx 2 1 roll
+		%[mark y1 (sub) dx/dy (mul) x1]
+		/add cvx
+		%[mark y1 (sub) dx/dy (mul) x1 (add)]
+	]
+	cvx
+} def
+
+%пересечение с горизонталью
+%[x1, y1, x2, y2, y]
+/2crossh {
+	5 1 roll
+	1 2index 2sub
+	div
+	%[y, x1, y1, dx/dy]
+	exch
+	%[y, x1, dx/dy, y1]
+	3 index
+	exch sub
+	mul
+	add
+	%[y, x]
+	exch
+} def
+
+/2crossv {
+	%[x1, y1, x2, y2, x]
+	5 1 roll
+	1 2index 2sub
+	exch div
+	%[x, x1, y1, dy/dx]
+	3 2 roll
+	%[x, y1, dy/dx, x1]
+	3 index
+	exch sub
+	mul
+	add
+} def
+
+%[x1, y1, x2, y2, x3, y3, x4, y4]
+/2cross {
+	0 dict begin
+		/P4 2edef
+		/P3 2edef
+		/P2 2edef
+		/P1 2edef
+		/k12 P2 P1 2sub exch div def
+		/k34 P4 P3 2sub exch div def
+		/b12 P1 exch k12 mul exch sub def
+		/b12 P3 exch k34 mul exch sub def
+		/Delta k34 k12 sub def
+		/DeltaX b34 b12 sub def
+		/DeltaY k12 b34 mul k34 b12 mul sub def
+		
+		DeltaX DeltaY Delta 2div
+	end
+} def

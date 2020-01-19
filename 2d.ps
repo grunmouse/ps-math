@@ -1,0 +1,220 @@
+%Процедуры для работы с парами чисел как с векторами
+
+/2== {
+	2 array astore
+	==
+} def
+
+%Дублирует вектор
+/2dup{
+	2 copy
+} def
+
+/2copy{
+	2 mul copy
+} def
+
+/2pop{
+	pop pop
+} def
+
+%Меняет местами два вектора
+/2exch{
+	4 2 roll
+} def
+
+%Прокручивает вектора, как roll, но за единицу считаются два элемента стека
+/2roll{
+	2 2mul
+	roll
+} def
+
+%Получает из стека вектор по номеру, начиная с 0, введённый индекс - не считается.
+/2index {
+	2 mul 1 add dup
+	1 add index exch index
+} def
+
+%Создаёт процедуру, вводящую вектор
+%[/name, x, y]
+/2def {
+	2 array astore
+	cvx
+	def
+} def
+
+%Синтаксический сахар для 2def, чтобы использовать для аргументов процедур.
+%[x, y, /name]
+/2edef {
+	3 1 roll
+	2def
+} def
+
+% Сумма векторов
+%[x0, y0, x1, y1]
+/2add {
+	exch 3 1 roll
+	%[x0, x1, y0, y1]
+	add
+	3 1 roll
+	add
+	exch
+} def
+%[x0+x1, y0+y1]
+
+% разность векторов
+/2sub {
+	exch 3 1 roll
+	sub
+	3 1 roll
+	sub
+	exch
+} def
+
+/2neg {
+	neg
+	exch
+	neg
+	exch
+} def
+
+%произведение вектора на число
+%[x, y, a]
+/2mul {
+	exch
+	1 index
+	mul
+	3 1 roll
+	mul
+	exch
+} def
+
+%деление вектора на число
+%[x, y, a]
+/2div {
+	exch
+	1 index
+	div
+	3 1 roll
+	div
+	exch
+} def
+
+%скалярное произведение векторов
+%[x0, y0, x1, y1]
+/2cdot {
+	exch 3 1 roll
+	%[x0, x1, y0, y1]
+	mul
+	3 1 roll
+	mul
+	%[y0*y1, x0*x1]
+	add
+} def
+
+%псевдоскалярное произведение векторов
+%[x0, y0, x1, y1]
+/2times {
+	4 -1 roll
+	%[y0, x1, y1, x0]
+	mul
+	%[y0, x1, y1*x0]
+	3 1 roll
+	mul
+	%[y1*x0, y0*x1]
+	sub
+} def
+
+% квадрат вектора
+/2sq {
+	dup mul
+	exch
+	dup mul
+	add
+} def
+
+%модуль вектора
+/2hypot {
+	2sq sqrt
+} def
+
+/2abs {
+	2sq sqrt
+} def
+
+%Находит середину отрезка
+%[ax, ay, bx, by]
+/2center {
+	2add 2 2div
+} def
+%[cx, cy]
+
+
+%орт вектора
+/2ort {
+	2dup
+	2hypot
+	2div
+} def
+
+%Поворачивает переданный вектор вправо на 90°
+/2normal {
+	%x' = -y
+	%y' = x
+	%[x, y]
+	neg
+	%[x, -y]
+	exch
+	%[-y, x]
+} def
+
+%проекция вектора a на вектор b, направленная вдоль вектора a, в направлении, зависящем от знака
+%[ax, ay, bx, by]
+/2proj {
+	0 dict begin
+		/b 2edef
+		/a 2edef
+		b
+		a b 2cdot %(a,b)
+		b 2sq %(b^2)
+		div
+		%[bx, by, (a,b)/b^2]
+		2mul
+	end
+} def
+
+% Оргтгонализация Грама-Шмидта
+%[ax, ay, bx, by]
+% Возвращает вектор, равный составляющей a перпендикулярной b
+/2ortogonal {
+	0 dict begin
+		/B 2edef
+		2dup
+		%[ax, ay, ax, ay]
+		B 2proj
+		2sub
+	end
+} def
+
+%Меняет местами координаты y двух векторов
+%[ax, ay, bx, by]
+/2swap-y {
+	exch
+	%[ax, ay, by, bx]
+	3 2 roll
+} def
+%[ax, by, bx, ay]
+
+
+%Создаёт правую ортонормированную матрицу, использующую переданную пару чисел в качестве орта i
+%[ix, iy]
+/2XMatrix {
+	2dup
+	2normal
+	%[i, j] - орты новой системы координат
+	0
+	0
+	6 array
+	astore
+} def
+%[matrix]

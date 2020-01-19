@@ -1,0 +1,61 @@
+%математические функции
+
+/sq {
+	dup mul
+} bind def
+
+/sign {
+	dup
+	0 ne
+	{
+		0 le
+		{-1}{1}
+		ifelse
+	}
+	{0}
+	ifelse
+} bind def
+
+%упорядочивает пару числе в стеке так, чтобы в вершине оказалось большее из них
+/max {
+	2 copy
+	%[a, c, a, c]
+	gt %a>c
+	{
+		exch
+	}
+	if
+} def
+
+%Инкремент вершины стека или значения по имени из вершины стека
+/inc {
+	dup type
+	<<
+		/nametype {
+			dup 
+			load
+			inc
+			def
+		}
+		/integertype {1 add}
+		/realtype {1 add}
+	>>
+	exch get exec
+} def
+
+%Декремент вершины стека или значения по имени из вершины стека
+/dec {
+	dup type
+	<<
+		/nametype {
+			dup 
+			cvx exec
+			dec
+			def
+		}
+		/integertype {1 sub}
+		/realtype {1 sub}
+	>>
+	exch get exec
+} def
+

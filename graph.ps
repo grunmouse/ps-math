@@ -1,0 +1,46 @@
+%Библиотека процедур, облегчающих использование графики
+
+{(2d.ps) stealfile} /2edef ifnotkey
+
+%находит наибольший доступный радиус скругления для arct
+%[x1, y1, x2, y2]
+/max-arct {
+	0 dict begin
+		/C 2edef
+		/B 2edef
+		/A currentpoint 2def
+		/a A B 2sub 2def
+		/c C B 2sub 2def
+		a 2hypot
+		c 2hypot
+		2 copy 2 copy
+		%[a, c, a, c, a, c]
+		gt %a>c
+		{
+			exch
+		}
+		if
+		pop
+		%[a, c, S]
+		/S exch def
+		mul
+		/ac exch def
+		
+		/sinT a c 2times abs ac div def
+		/cosT a c 2cdot ac div def
+		
+		/tgt 1 cosT sub sinT div def
+		
+		S tgt mul
+	end
+} def
+
+%Аналог max-arct, но от второго отрезка берёт половину
+%@param {[x, y]}B, {[x, y]}C - точки
+%[B, C]
+/max-arct-safe {
+	1 2index 2exch
+	%[B, B, C]
+	2center
+	max-arct
+}
