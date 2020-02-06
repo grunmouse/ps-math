@@ -1,3 +1,6 @@
+(2d.ps) stealfile
+(math.ps) stealfile
+
 %[x1, y1, x2, y2]
 /2lineYX {
 	1 2index
@@ -78,14 +81,59 @@
 		/P3 2edef
 		/P2 2edef
 		/P1 2edef
-		/k12 P2 P1 2sub exch div def
-		/k34 P4 P3 2sub exch div def
-		/b12 P1 exch k12 mul exch sub def
-		/b12 P3 exch k34 mul exch sub def
-		/Delta k34 k12 sub def
-		/DeltaX b34 b12 sub def
-		/DeltaY k12 b34 mul k34 b12 mul sub def
 		
-		DeltaX DeltaY Delta 2div
+		/P21 P2 P1 2sub 2def
+		/P43 P4 P3 2sub 2def
+		
+		/b1 P21 P1 2times def
+		/b2 P43 P3 2times def
+		
+		P21 neg exch
+		P43 neg exch
+		b1 b2
+		
+		kramer2
 	end
 } def
+%[x, y]
+
+/2distance {
+	2sub 2hypot
+} def
+
+%[x1, y1, R1, x2, y2, R2]
+/2crosscircle {
+	0 dict begin
+		/R2 exch def
+		/P2 2edef
+		/R1 exch def
+		/P1 2edef
+		/D P2 P1 2sub 2def
+		D /b exch def /a exch def
+		/m R1 sq D 2sq add R2 sq sub 2 div def
+		
+		D 2sq
+		2 m a mul mul neg
+		m sq b sq R1 sq mul sub
+		squareeq
+		aload length
+		1 eq{
+			dup sq neg R1 sq add sqrt
+			2dup
+			neg
+			% C1, C2
+		}
+		{
+			a neg b div 2mul
+			m dup 2add
+		}
+		ifelse
+		
+		/C2 2edef
+		/C1 2edef
+		
+		P1 C1 2add
+		P1 C2 2add
+	end
+} def
+%[C1, C2]
