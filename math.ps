@@ -59,6 +59,54 @@
 	exch get exec
 } def
 
+
+%[x, y] находит ближайшее число меньше или равное x, кратное y
+/mfloor {
+	exch
+	%(floor) == dup ==
+	floor
+	cvi
+	%[y, x]
+	dup
+	%[y, x, x]
+	3 -1 roll
+	%[x, x, y]
+	mod
+	%[x, x mod y]
+	sub
+} def
+%[x - x mod y]
+
+%[x, y]
+/mceil {
+	exch
+	ceiling
+	cvi
+	%[y, x]
+	exch
+	2 copy
+	%[x, y, x, y]
+	mod
+	%[x, y, x mod y]
+	dup
+	0 eq
+	%then
+	{
+		%[x, y, x mod y]
+		dup dup
+		%[x]
+	}
+	%else
+	{
+		%[x, y, x mod y]
+		sub
+		add
+		%[x + y - x mod y]
+	}
+	ifelse
+} def
+
+%Находит действительные корни квадратного уравнения
 %[a, b, c]
 /squareeq{
 	0 dict begin
@@ -103,6 +151,7 @@
 } def
 %array of x
 
+%Решает систему из двух линейных уравнений с двумя неизвестными методом Крамера
 %[a11, a12, a21, a22, b1, b2]
 % a11*x1 + a12*x2 = b1,
 % a21*x1 + a22*x2 = b2;
