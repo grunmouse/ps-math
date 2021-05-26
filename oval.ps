@@ -1,0 +1,39 @@
+{(2d.ps) stealfile} /2sub ifnotkey
+{(math.ps) stealfile} /sq ifnotkey
+
+%[AO, BO] - большая и малая полуоси
+/ovalpath {
+	0 dict begin
+		/BO exch def %малая полуось
+		/AO exch def %большая полуось
+		/AB AO BO 2hypot def
+		/tg BO AO div def %тангенс угла OAB
+		/cos AO AB div def %тангенс угла OAB
+		/BM AO BO sub def %вспомогательный отрезок на линии AB
+		/AM AB BM sub def 
+		/AN AM 2 div def %находим точку N, где сопрягаются дуги
+		/AC AN cos div def %точка C - центр малой дуги, расположена на AO
+		/CO AO AC sub def 
+		/DO CO tg div def % точка D - центр большой дуги, расположена на продолжении BO за O
+		/CD DO cos div def
+		/BD DO BO add def
+		/DN BD cos mul def %радиус большой дуги
+		/CN DN CD sub def %радиус малой дуги
+		/alpha BO AO atan def %угол OAB в градусах
+		
+		/A1 90 alpha sub def
+		/A2 90 alpha add def
+		/A3 A1 180 add def
+		/A4 A2 180 add def
+		
+		/RA AC def
+		/RB BD def
+		
+		newpath
+		0 DO neg RB A1 A2 arc
+		CO neg 0 RA A2 A3 arc
+		0 DO RB A3 A4 arc
+		CO 0 RA A4 A1 arc
+		closepath
+	end
+} def
