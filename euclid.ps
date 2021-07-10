@@ -1,0 +1,47 @@
+/circle {
+	0 360 arc stroke
+} def
+/point {
+	1 0 360 arc	stroke
+} def
+
+/line {
+	2exch moveto lineto stroke
+} def
+
+/curinfinitylength 200 def
+
+/ray {
+	0 dict begin
+		/l 2edef
+		/O 2edef
+		/B l O 2sub 2ort 
+		curinfinitylength 2mul 
+		2def
+		O B line
+	end
+} def
+
+/pcircle {
+	1 2index 2sub 2hypot circle
+} def
+
+%[/name, x, y, R]
+/defcircle {
+	3 array astore
+	cvx
+	def
+} def
+
+%[/name, x0, y0, x1, y1]
+/pdefcircle{
+	1 2index 2distance
+	defcircle
+} def
+
+%[/name, x0, y0, x1, y1]
+/defline{
+	4 array astore
+	cvx
+	def
+} def

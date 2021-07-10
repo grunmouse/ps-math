@@ -1,6 +1,7 @@
 {(2d.ps) stealfile} /2sub ifnotkey
 {(math.ps) stealfile} /sq ifnotkey
 
+%создаёт процедуру расчёта Y(X) для заданной прямой
 %[x1, y1, x2, y2]
 /2lineYX {
 	1 2index
@@ -22,6 +23,7 @@
 	cvx
 } def
 
+%создаёт процедуру расчёта X(Y) для заданной прямой
 %[x1, y1, x2, y2]
 /2lineXY {
 	1 2index
