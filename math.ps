@@ -16,6 +16,14 @@
 	ifelse
 } bind def
 
+/tan {
+	dup sin exch cos div
+} bind def
+
+/cot {
+	dup cos exch sin div
+} bind def
+
 %упорядочивает пару числе в стеке так, чтобы в вершине оказалось большее из них
 /max {
 	2 copy
