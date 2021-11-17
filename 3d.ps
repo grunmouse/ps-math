@@ -1,0 +1,181 @@
+%Процедуры для работы с тройками чисел как с векторами
+
+{(2d.ps) stealfile} /2mul ifnotkey
+
+/3== {
+	3 array astore
+	==
+} def
+
+%Дублирует вектор
+/3dup{
+	3 copy
+} def
+
+/3copy{
+	3 mul copy
+} def
+
+/3pop{
+	pop pop pop
+} def
+
+%Меняет местами два вектора
+/3exch{
+	6 3 roll
+} def
+
+%Прокручивает вектора, как roll, но за единицу считаются два элемента стека
+/3roll{
+	3 2mul
+	roll
+} def
+
+%Получает из стека вектор по номеру, начиная с 0, введённый индекс - не считается.
+/3index {
+	3 mul 1 add dup %[3*index+1]
+	dup index exch
+	dup index exch
+	dup index exch 
+	pop
+} def
+
+%Создаёт процедуру, вводящую вектор
+%[/name, x, y, z]
+/3def {
+	3 array astore
+	cvx
+	def
+} def
+
+%Синтаксический сахар для 2def, чтобы использовать для аргументов процедур.
+%[x, y, /name]
+/3edef {
+	4 1 roll
+	3def
+} def
+
+% Сумма векторов
+%[x0, y0, z0, x1, y1, z1]
+/3add {
+	3 index add
+	%[x0, y0, z0, x1, y1, z1+z0]
+	6 -1 roll
+	%[z1+z0, x0, y0, z0, x1, y1]
+	3 index add
+	%[z1+z0, x0, y0, z0, x1, y1+y0]
+	6 -1 roll
+	%[y1+y0, z1+z0, x0, y0, z0, x1]
+	3 index add
+	%[y1+y0, z1+z0, x0, y0, z0, x1+x0]
+	6 -1 roll
+	%[x1+x0, y1+y0, z1+z0, x0, y0, z0]
+	3pop
+} def
+%[x0+x1, y0+y1, z0+z1]
+
+% разность векторов
+/3sub {
+	3 index exch sub
+	6 -1 roll
+	3 index exch sub
+	6 -1 roll
+	3 index exch sub
+	6 -1 roll
+	3pop
+} def
+
+/3neg {
+	neg
+	3 1 roll
+	neg
+	3 1 roll
+	neg
+	3 1 roll
+} def
+
+%произведение вектора на число
+%[x, y, z, a]
+/3mul {
+	0 dict begin
+		/a exch def
+		a mul
+		3 1 roll
+		a mul
+		3 1 roll
+		a mul
+		3 1 roll
+	end
+} def
+
+%деление вектора на число
+%[x, y, z, a]
+/3div {
+	0 dict begin
+		/a exch def
+		a div
+		3 1 roll
+		a div
+		3 1 roll
+		a div
+		3 1 roll
+	end
+} def
+
+%скалярное произведение векторов
+%[x0, y0, z0, x1, y1, z1]
+/3cdot {
+	3 index mul
+	%[x0, y0, z0, x1, y1, z1*z0]
+	6 -1 roll
+	%[z1+z0, x0, y0, z0, x1, y1]
+	3 index mul
+	%[z1*z0, x0, y0, z0, x1, y1*y0]
+	6 -1 roll
+	%[y1*y0, z1*z0, x0, y0, z0, x1]
+	3 index mul
+	%[y1*y0, z1*z0, x0, y0, z0, x1*x0]
+	6 -1 roll
+	%[x1*x0, y1*y0, z1*z0, x0, y0, z0]
+	3pop
+	%[x1*x0, y1*y0, z1*z0]
+	add
+	add
+} def
+
+% квадрат вектора
+/3sq {
+	%[x, y, z]
+	dup mul
+	3 1 roll
+	dup mul
+	3 1 roll
+	dup mul
+	3 1 roll
+	add
+	add
+} def
+
+%модуль вектора
+/3hypot {
+	3sq sqrt
+} def
+
+/3abs {
+	3sq sqrt
+} def
+
+%Находит середину отрезка
+%[ax, ay, az, bx, by, bz]
+/3center {
+	3add 3 3div
+} def
+%[cx, cy, cz]
+
+
+%орт вектора
+/3ort {
+	3dup
+	3hypot
+	3div
+} def

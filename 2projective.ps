@@ -1,0 +1,27 @@
+{(3d.ps) stealfile} /3edef ifnotkey
+%
+%	a c tx
+%	b d ty
+%	m n tw
+%
+%	u' = a*x + c*y + tx
+%	v' = b*x + c*y + ty
+%	w' = m*x + n*y + tw
+%	x' = u'/w'
+%	y' = v'/w'
+
+%проективное преобразование двухмерного вектора
+% [x, y, a, c, tx, b, d, ty, m, n, tw] - координаты исходного вектора и компоненты матрицы
+/2projective {
+	0 dict begin
+		/Cw 3edef
+		/Cv 3edef
+		/Cu 3edef
+		1 /A 3edef
+		A Cu 3mul %u'
+		A Cv 3mul %v'
+		A Cw 3mul %w'
+		2div	%[x', y']
+	end
+} def
+%[x', y']
