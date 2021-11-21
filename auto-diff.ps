@@ -1,0 +1,196 @@
+% [arr, n, dn]
+/edef-pair {
+	4 dict begin
+		/dn exch def
+		/n exch def
+		
+		dup type
+		<<
+			/integertype {
+				/x exch def
+				/dx 0 def
+			}
+			/realtype {
+				/x exch def
+				/dx 0 def
+			}
+			/arraytype{
+				aload
+				pop
+				/dx exch def
+				/x exch def
+			}
+		>>
+		exch get exec
+		currentdict
+	end
+	dup 
+	dup 
+	/dn get
+	exch 
+	/dx get
+	def
+	dup /n get
+	exch /x get
+	def
+} bind def
+
+
+
+
+/auto-diff-source <<
+	
+	%/abs {}
+	%/atan {}
+	
+	% [ [x, x'], [y, y'] ]
+	/add {
+		4 dict begin
+			/y /dy edef-pair
+			/x /dx edef-pair
+			
+			[
+				x y add
+				dx dy add
+			]
+			%[x+y, x'+y']
+		end
+	}
+	/sub {
+		4 dict begin
+			/y /dy edef-pair
+			/x /dx edef-pair
+			
+			[
+				x y sub
+				dx dy sub
+			]
+			%[x-y, x'-y']
+		end
+	}
+	/mul {
+		4 dict begin
+			/y /dy edef-pair
+			/x /dx edef-pair
+			[
+				x y mul
+				dx y mul x dy mul add
+			]
+			
+			%[x*y, x'*y + x*y']
+		end
+	}
+	/div {
+		4 dict begin
+			/y /dy edef-pair
+			/x /dx edef-pair
+			
+			[
+				x y div
+				dx y mul x dy mul sub y dup mul div
+			]
+			%[x*y, (x'*y - x*y')/y/y]
+		end
+	}
+	/neg {
+		2 dict begin
+			dup ==
+			/x /dx edef-pair
+			
+			[
+				x neg
+				dx neg
+			]
+			dup ==
+		end
+	}
+	
+	/cos {
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x cos
+				x sin neg dx mul
+			]
+		end
+	}
+	/sin {
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x sin
+				x cos dx mul
+			]
+		end
+	}
+	/exp {
+		2 dict begin
+			/y /dy edef-pair
+			/x /dx edef-pair
+			x 0 eq
+			{
+				[0 0]
+			}
+			{
+				[
+					x y exp
+					x y exp
+					dy x ln mul
+					dx x div y mul
+					add
+					mul
+				]
+			} ifelse
+		end
+	}
+	/ln {		
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x ln
+				dx x div
+			]
+		end
+	}
+	/log {
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x log
+				dx x div 10 ln div
+			]
+		end
+	}
+	/sqrt {
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x sqrt
+				dx 2 div x sqrt div % dx/2/sqrt(x)
+			]
+		end
+	}	
+	/sq {
+		2 dict begin
+			/x /dx edef-pair
+			
+			[
+				x dup mul
+				2 x mul dx mul
+			]
+		end
+	}
+>> def
+
+/auto-diff-lib <<
+	auto-diff-source
+	{bind}
+	forall
+>> def
+
+

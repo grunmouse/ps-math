@@ -1,0 +1,78 @@
+%Находит действительные корни квадратного уравнения
+%[a, b, c]
+/squareeq{
+	0 dict begin
+		/c exch def
+		/b exch def
+		/a exch def
+		a 0 eq
+		{
+			b 0 eq 
+			{
+				[]
+			}
+			{
+				[c b div neg]
+			}
+			ifelse
+		}
+		{
+			/D 
+				b sq 
+				4 a c mul mul 
+				sub
+			def
+			D 0 eq
+			{
+				[b a div 2 div neg]
+			}
+			{
+				D 0 lt
+				{
+					[]
+				}
+				{
+					[
+						b neg D sqrt add 2 div a div
+						b neg D sqrt sub 2 div a div
+					]
+				} ifelse
+			} ifelse
+		} ifelse
+	end
+} def
+%array of x
+
+%Решает систему из двух линейных уравнений с двумя неизвестными методом Крамера
+%[a11, a12, a21, a22, b1, b2]
+% a11*x1 + a12*x2 = b1,
+% a21*x1 + a22*x2 = b2;
+/kramer2{
+	0 dict begin
+		/b2 exch def
+		/b1 exch def
+		/a22 exch def
+		/a21 exch def
+		/a12 exch def
+		/a11 exch def
+		
+		/D 
+			a11 a22 mul
+			a21 a12 mul
+			sub
+		def
+		/D1
+			b1 a22 mul
+			b2 a12 mul
+			sub
+		def
+		/D2
+			a11 b2 mul
+			a21 b1 mul
+			sub
+		def
+		D1 D div
+		D2 D div
+	end
+} def
+%[x1, x2]

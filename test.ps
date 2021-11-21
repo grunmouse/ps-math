@@ -4,10 +4,226 @@
 %ps2pdf -dNOSAFER test.ps - ключи вызова
 (../ps-steal/steal.ps) run
 
-(oval.ps) stealfile
+(index.ps) stealfile
 
-100 100 translate
+/==dict {
+	[ 
+		exch
+		{}forall
+	]
+	==
+} def
 
-80 60 ovalpath stroke
-70 50 ovalpath stroke
-60 40 ovalpath stroke
+/assert {
+} def
+
+/auto-diff-test <<
+	/test {
+		0 dict begin
+			/x exch def
+			
+			currentdict ==dict
+			
+			[x 1]
+			auto-diff-lib begin	f end
+			%dup ==
+
+			aload pop
+			
+			x df
+			%dup ==
+			sub
+			dup 0 eq {pop (dx OK) pop} {== (dx ERR) ==}ifelse 
+			x f
+			%dup ==
+			sub
+			dup 0 eq {pop (x OK) pop} {== (x ERR) ==}ifelse 
+		end
+	} def
+
+>> def
+
+auto-diff-test begin
+	0 dict begin
+		
+		%x
+		/f {
+			0 dict begin
+				/x exch def
+				
+				x sin
+				x cos
+				add
+			end
+		} def
+		/df {
+			0 dict begin
+				/x exch def
+				
+				x cos
+				x sin
+				sub
+			end
+		} def
+
+		%(sin(x) + cos(x)) ==
+		%0 0.5 7 {test} for
+		
+	end
+	
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				5 x mul
+				4 sub
+			end
+		} def
+		/df {
+			0 dict begin
+				/x exch def
+				5
+			end
+		} def
+		
+		%(5*x - 4) ==
+		%0 1 10 {test} for
+	end
+	
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				x sq
+				1 x div cos
+				mul
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				2 x mul
+				1 x div cos mul
+				1 x div sin
+				add
+			end
+		} def
+
+		%(x^2*cos(1/x)) ==
+		%0.1 0.1 1 {test} for
+		%0.8 test
+	end
+
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				
+				x x x mul mul
+				3 x x mul mul
+				sub
+				2 add
+				x 1 sub
+				div
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				
+				2
+				x 1 sub
+				mul
+			end
+		} def
+
+		%(\(x^3 - 3*x^2 + 2\)/\(x - 1\)) ==
+		%2 1 10 {test} for
+	end
+
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				
+				x sq 1 sub sqrt ln
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				
+				x
+				x sq 1 sub
+				div
+			end
+		} def
+
+		%(ln(sqrt(x^2 - 1))) ==
+		%2 1 10 {test} for
+	end
+
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				
+				x neg 
+				
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				
+				-1
+			end
+		} def
+
+		%(-x) ==
+		%-5 1 5 {test} for
+		
+	end
+	
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				
+				E x exp
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				
+				E x exp
+			end
+		} def
+
+		%(exp\(x\)) ==
+		%-5 1 5 {test} for
+	end
+
+	0 dict begin
+		/f {
+			0 dict begin
+				/x exch def
+				
+				x 2 exp
+			end
+		} def
+		/df{
+			0 dict begin
+				/x exch def
+				
+				2 x mul
+			end
+		} def
+
+		%(x^2) ==
+		%-5 1 0 {test} for
+		%0 1 5 {test} for
+		
+	end
+end
