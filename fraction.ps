@@ -1,0 +1,115 @@
+
+{(math.ps) stealfile} /min ifnotkey
+{(2d.ps) stealfile} /2div ifnotkey
+
+
+%Функции для работы с парами чисел как с простыми дробями
+
+%[a, b]
+/NOD {
+	{
+		2 copy eq {exit} if
+		max
+		%[меньшее, больше]
+		1 index
+		%[меньшее, больше, меньшее]
+		mod
+		%[меньшее, остаток]
+	} loop
+	pop
+} def
+
+%[nom, den]
+/fraction-reduce {
+	2 copy
+	NOD
+	2div
+} def
+%[nom, den]
+
+%[nom1, den1, nom2, den2] - две пары чисел, трактуемые как дроби
+/common-denominator {
+	6 dict begin
+		/den2 exch def
+		/nom2 exch def
+		/den1 exch def
+		/nom1 exch def
+		
+		den1 den2 eq
+		%then
+		{
+			%Если знаменатели равны, то возвращаем исходные дроби
+			nom1 den1 nom2 den2
+		} 
+		%else
+		{
+			nom1 nom2 2 copy NOD 2div
+			/mul1 exch def
+			/mul2 exch def
+			%mul1 = nom2/NOD
+			%mul2 = nom1/NOD
+			
+			nom1 den1 mul1 2mul
+			nom2 den2 mul2 2mul
+		}
+		ifelse
+	end
+} def
+%[nom1, den1, nom2, den2] - две пары чисел, трактуемые как дроби. После работы den1 = den2
+
+
+%[nom1, den1]
+/fraction-neg {
+	exch
+	neg
+	exch
+} def
+%[-nom1, den1]
+
+%Складывает дроби
+/fraction-add {
+	common-denominator
+	pop
+	%[nom1, den, nom2]
+	3 -1 roll
+	%[den, nom2, nom1]
+	add
+	exch
+	%[nom1+nom2, den]
+} def
+
+%Складывает дроби
+/fraction-sub {
+	common-denominator
+	pop
+	%[nom1, den, nom2]
+	3 -1 roll
+	%[den, nom2, nom1]
+	sub
+	exch
+	%[nom1+nom2, den]
+} def
+
+/fraction-mul {
+	4 dict begin
+		/den2 exch def
+		/nom2 exch def
+		/den1 exch def
+		/nom1 exch def
+		
+		nom1 nom2 mul
+		den1 den2 mul
+	end
+} def
+
+/fraction-div {
+	4 dict begin
+		/den2 exch def
+		/nom2 exch def
+		/den1 exch def
+		/nom1 exch def
+		
+		nom1 den2 mul
+		den1 nom2 mul
+	end
+} def
