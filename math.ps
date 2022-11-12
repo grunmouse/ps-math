@@ -128,3 +128,12 @@
 	ifelse
 } def
 
+%[a, b, eps] 
+/approx {
+	3 1 roll
+	%[eps, a, b]
+	sub abs
+	%[eps, diff]
+	ge
+} def
+%[abs(a-b)<=eps]

@@ -2,6 +2,12 @@
 {(math.ps) stealfile} /min ifnotkey
 {(2d.ps) stealfile} /2div ifnotkey
 
+/2cvi {
+	cvi
+	exch
+	cvi
+	exch
+} def
 
 %Функции для работы с парами чисел как с простыми дробями
 
@@ -13,17 +19,25 @@
 		%[меньшее, больше]
 		1 index
 		%[меньшее, больше, меньшее]
+		dup 0 eq {
+			pop exch exit
+		} if
 		mod
 		%[меньшее, остаток]
 	} loop
 	pop
 } def
 
+%[a, b]
+/NOK {
+	2 copy NOD div mul cvi
+} def
+
 %[nom, den]
 /fraction-reduce {
 	2 copy
 	NOD
-	2div
+	2div 2cvi
 } def
 %[nom, den]
 
@@ -43,11 +57,11 @@
 		} 
 		%else
 		{
-			nom1 nom2 2 copy NOD 2div
+			den1 den2 2 copy NOD 2div 2cvi
 			/mul1 exch def
 			/mul2 exch def
-			%mul1 = nom2/NOD
-			%mul2 = nom1/NOD
+			%mul1 = den2/NOD
+			%mul2 = den1/NOD
 			
 			nom1 den1 mul1 2mul
 			nom2 den2 mul2 2mul
@@ -78,7 +92,7 @@
 	%[nom1+nom2, den]
 } def
 
-%Складывает дроби
+%Вычитает дроби
 /fraction-sub {
 	common-denominator
 	pop
@@ -87,9 +101,10 @@
 	%[den, nom2, nom1]
 	sub
 	exch
-	%[nom1+nom2, den]
+	%[nom1-nom2, den]
 } def
 
+%Умножает дроби
 /fraction-mul {
 	4 dict begin
 		/den2 exch def
@@ -102,6 +117,7 @@
 	end
 } def
 
+%Делит дроби
 /fraction-div {
 	4 dict begin
 		/den2 exch def
@@ -111,5 +127,45 @@
 		
 		nom1 den2 mul
 		den1 nom2 mul
+	end
+} def
+
+%Равенство дробей
+/fraction-eq {
+	fraction-div
+	eq
+} def
+
+
+/fraction-has-div {
+	fraction-div
+	fraction-reduce
+	exch pop
+	1 eq
+} def
+
+%initial increment limit proc for
+%[init_nom, init_den, inc_nom, inc_den, limit_nom, limit_den, proc]
+/fraction-for {
+	8 dict begin
+		/proc exch def
+		/limit_den exch def
+		/limit_nom exch def
+		/inc_den exch def
+		/inc_nom exch def
+		/init_den exch def
+		/init_nom exch def
+		
+		/common_den limit_den inc_den NOK init_den NOK def
+
+		init_nom common_den init_den div mul cvi
+		inc_nom common_den inc_den div mul cvi
+		limit_nom common_den limit_den div mul cvi
+		{
+			%[item_nom]
+			common_den
+			fraction-reduce
+			proc
+		} for
 	end
 } def
