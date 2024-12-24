@@ -43,6 +43,23 @@
 } def
 %array of x
 
+%[a11, a12, a21, a22]
+/determinant2 {
+	0 dict begin
+		/b2 exch def
+		/b1 exch def
+		/a22 exch def
+		/a21 exch def
+		/a12 exch def
+		/a11 exch def
+		
+		a11 a22 mul
+		a21 a12 mul
+		sub
+	end
+}
+%[a11*a22 - a12*a21]
+
 %Решает систему из двух линейных уравнений с двумя неизвестными методом Крамера
 %[a11, a12, a21, a22, b1, b2]
 % a11*x1 + a12*x2 = b1,
