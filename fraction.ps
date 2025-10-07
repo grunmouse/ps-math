@@ -169,3 +169,14 @@
 		} for
 	end
 } def
+
+%Преобразует аргумент в пару значений nom den
+/tofrac {
+	dup type
+	<<
+		/arraytype {0 2 getinterval aload pop}
+		/dicttype {begin nom den end}
+		/integertype {1}
+	>>
+	exch get exec
+} def
