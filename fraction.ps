@@ -35,9 +35,26 @@
 
 %[nom, den]
 /fraction-reduce {
-	2 copy
-	NOD
-	2div 2cvi
+	2 dict begin 
+		/den exch def
+		/nom exch def
+		nom 0 eq {
+			0 1
+		}
+		{
+			nom 0 lt {
+				nom neg den 
+				fraction-reduce
+				exch neg exch
+			}
+			{
+				nom den
+				2dup
+				NOD
+				2div 2cvi
+			} ifelse
+		} ifelse
+	end
 } def
 %[nom, den]
 
@@ -99,6 +116,7 @@
 	%[nom1, den, nom2]
 	3 -1 roll
 	%[den, nom2, nom1]
+	exch
 	sub
 	exch
 	%[nom1-nom2, den]
@@ -156,13 +174,16 @@
 		/init_den exch def
 		/init_nom exch def
 		
+		
 		/common_den limit_den inc_den NOK init_den NOK def
-
+		
 		init_nom common_den init_den div mul cvi
 		inc_nom common_den inc_den div mul cvi
 		limit_nom common_den limit_den div mul cvi
+
 		{
 			%[item_nom]
+			
 			common_den
 			fraction-reduce
 			proc
