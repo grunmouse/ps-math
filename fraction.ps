@@ -191,12 +191,121 @@
 	end
 } def
 
+%[fun]
+/find-10 {
+	0 dict begin
+		/fun exch def
+		/find-inner-p 10 def
+		/find-inner-n 0 def
+		
+		/find-inner-x 5 def
+		{
+			find-inner-x fun
+			dup 0 eq {
+				pop
+				find-inner-x find-inner-x true exit
+			} 
+			{
+				0 lt {
+					/find-inner-n find-inner-x def
+				}
+				{
+					/find-inner-p find-inner-x def
+				}
+				ifelse
+			}
+			ifelse
+			
+			find-inner-p find-inner-n sub 1 eq {
+				find-inner-n find-inner-p false exit
+			} if
+		
+			/find-inner-x find-inner-p find-inner-n add 2 div round cvi def
+			find-inner-x find-inner-n eq
+			find-inner-x find-inner-p eq
+			or
+			{
+				(HZ) ==
+				false false false exit
+			}
+			if
+
+		} loop
+	end
+} def
+
+%Находит рациональную дробь для десятичной дроби с точностью три знака после запятой
+/by1000-tofrac {
+	0 dict begin
+		/by1000-inner-x exch def
+		/by1000-inner-n by1000-inner-x floor def
+		
+		{10 div by1000-inner-n add by1000-inner-x sub} find-10
+		%[n p is]
+		{
+			pop
+			by1000-inner-n 10 mul add cvi 10 true
+		}
+		{
+			pop
+			10 div by1000-inner-n add /by1000-inner-n exch def
+			%by1000-inner-n ==
+			{100 div by1000-inner-n add by1000-inner-x sub} find-10
+			{
+				pop
+				by1000-inner-n 100 mul add cvi 100 true
+			}
+			{
+				pop
+				100 div by1000-inner-n add /by1000-inner-n exch def
+				{1000 div by1000-inner-n add by1000-inner-x sub} find-10
+				{
+					pop
+					by1000-inner-n 1000 mul add cvi 1000 true
+				}
+				{
+					pop pop
+					by1000-inner-x false
+				}
+				ifelse
+			}
+			ifelse
+		}
+		ifelse
+		
+	end
+} def
+
+/real-tofrac {
+	0 dict begin
+		/x exch def
+		/y x round def
+		x y eq
+		{
+			y cvi
+			1
+		} 
+		{
+			x by1000-tofrac
+			{
+				%ничего
+			}
+			{
+				1000 mul round cvi 1000
+			}
+			ifelse
+		}
+		ifelse
+	end
+} def
+
 %Преобразует аргумент в пару значений nom den
 /tofrac {
 	dup type
 	<<
 		/arraytype {0 2 getinterval aload pop}
 		/dicttype {begin nom den end}
+		/realtype {real-tofrac}
 		/integertype {1}
 	>>
 	exch get exec
